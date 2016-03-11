@@ -1,0 +1,6 @@
+# These should be filled out locally
+# To set the credentials create a local copy and name it mongo.properties
+mongo.host=
+mongo.port=
+mongo.user=
+mongo.password=
