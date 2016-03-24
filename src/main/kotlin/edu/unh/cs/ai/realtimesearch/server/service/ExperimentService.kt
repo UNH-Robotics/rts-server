@@ -61,5 +61,9 @@ class ExperimentService @Inject constructor(private val experimentResultReposito
         experimentResultRepository.insert(ExperimentResult(experimentResultData))
     }
 
+    fun createTasks(configurationTag: String): Int {
+        throw UnsupportedOperationException("not implemented")
+    }
+
 
 }
