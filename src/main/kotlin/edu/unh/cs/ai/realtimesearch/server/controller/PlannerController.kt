@@ -34,7 +34,7 @@ class PlannerController @Inject constructor(val experimentService: ExperimentSer
 
     @RequestMapping(path = arrayOf("/result/{clientId}"), method = arrayOf(RequestMethod.POST))
     fun uploadResult(@RequestBody experimentResult: ExperimentData, @PathVariable clientId: String) {
-        logger.info("Result submitted: $clientId \n$experimentResult")
+        logger.info("Result submitted: $clientId")
         experimentService.submitResult(experimentResult)
     }
 
