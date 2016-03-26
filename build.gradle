@@ -48,16 +48,3 @@ dependencies {
 task wrapper(type: Wrapper) {
     gradleVersion = '2.12'
 }
-
-jar {
-    baseName = 'server'
-    version = '0.0.1-SNAPSHOT'
-
-    manifest {
-        attributes "Main-Class": "$mainClassName"
-    }
-
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-}
