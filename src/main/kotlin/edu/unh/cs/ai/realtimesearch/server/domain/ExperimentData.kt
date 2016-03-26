@@ -17,30 +17,32 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
  * MAP is the top level item.
  */
 @JsonDeserialize(using = ExperimentDeserializer::class)
-open class ExperimentData(@JsonIgnore val valueStore: MutableMap<String, Any?> = hashMapOf()) {
+data class ExperimentData(@JsonIgnore val values: MutableMap<String, Any?> = hashMapOf()) {
     operator fun get(key: String): Any? {
-        return valueStore[key]
+        return values[key]
     }
 
     @JsonAnySetter
     fun set(key: String, value: String) {
-        valueStore[key] = value
+        values[key] = value
     }
 
     @Suppress("unused")
     @JsonAnyGetter
-    fun getProperties() = valueStore
+    fun getProperties() = values
 
     operator fun set(key: String, value: Any) {
-        valueStore[key] = value
+        values[key] = value
     }
 
     @Suppress("UNCHECKED_CAST")
     fun <T> getTypedValue(key: String): T? = this[key] as? T
-    open fun contains(key: String): Boolean = valueStore.contains(key)
+    open fun contains(key: String): Boolean = values.contains(key)
 
     override fun toString(): String {
         return toIndentedJson()
     }
 }
+
+
 
