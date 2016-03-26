@@ -1,5 +1,7 @@
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.core.ConsoleAppender
+import ch.qos.logback.core.FileAppender
+
 // define the USER_HOME variable setting its value
 // to that of the "user.home" system property
 def USER_HOME = System.getProperty("user.home")
@@ -20,4 +22,6 @@ appender("FILE", FileAppender) {
 }
 
 root(INFO, ["STDOUT"])
+root(INFO, ["FileAppender"])
+
 
