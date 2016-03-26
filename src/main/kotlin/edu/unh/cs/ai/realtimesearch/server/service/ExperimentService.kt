@@ -3,6 +3,7 @@ package edu.unh.cs.ai.realtimesearch.server.service
 
 import edu.unh.cs.ai.realtimesearch.server.domain.ExperimentData
 import edu.unh.cs.ai.realtimesearch.server.persistance.*
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import java.util.concurrent.locks.Lock
@@ -19,18 +20,9 @@ class ExperimentService @Inject constructor(private val experimentResultReposito
                                             private val experimentTaskRepository: ExperimentTaskRepository) {
 
 
+    private val logger = LoggerFactory.getLogger(ExperimentService::class.java)
     private val configurationLock: Lock = ReentrantLock()
     private val resultLock: Lock = ReentrantLock()
-
-    init {
-        println("Experiment Service !!!!!!!!!! ")
-
-        val experimentData = ExperimentData()
-        experimentData["Test field"] = "Test value"
-
-        val experimentConfiguration = ExperimentConfiguration(experimentData)
-        experimentConfigurationRepository.insert(experimentConfiguration)
-    }
 
     /**
      * Thread safe configuration getter.
@@ -41,10 +33,6 @@ class ExperimentService @Inject constructor(private val experimentResultReposito
     fun getConfiguration(): ExperimentConfiguration? = configurationLock.withLock {
         val page = experimentTaskRepository.findAll(PageRequest(0, 1))
 
-        if (page.number == 0) {
-            return null
-        }
-
         val task = page.content.first() ?: return null
         experimentTaskRepository.delete(task)
 
@@ -54,16 +42,36 @@ class ExperimentService @Inject constructor(private val experimentResultReposito
     }
 
     fun submitConfiguration(configurationData: ExperimentData) = configurationLock.withLock {
-        experimentConfigurationRepository.insert(ExperimentConfiguration(configurationData))
+        experimentConfigurationRepository.insert(ExperimentConfiguration(configurationData.values))
+    }
+
+    fun submitConfigurations(configurationData: List<ExperimentData>) = configurationLock.withLock {
+        logger.info("Configurations submitted: [${configurationData.size}]")
+        for (configuration in configurationData) {
+            experimentConfigurationRepository.insert(ExperimentConfiguration(configuration.values))
+        }
     }
 
     fun submitResult(experimentResultData: ExperimentData) = resultLock.withLock {
-        experimentResultRepository.insert(ExperimentResult(experimentResultData))
+        experimentResultRepository.insert(ExperimentResult(experimentResultData.values))
+    }
+
+    fun createTasksForAllConfigurations() = configurationLock.withLock {
+        logger.info("Add tasks for all configurations")
+        val configurations = experimentConfigurationRepository.findAll()
+        configurations.forEach {
+            experimentTaskRepository.insert(ExperimentTask(it.id))
+        }
+
+        return@withLock configurations.size
     }
 
     fun createTasks(configurationTag: String): Int {
         throw UnsupportedOperationException("not implemented")
     }
 
+    fun removeAllTasks() = configurationLock.withLock {
+        experimentTaskRepository.deleteAll()
+    }
 
 }
