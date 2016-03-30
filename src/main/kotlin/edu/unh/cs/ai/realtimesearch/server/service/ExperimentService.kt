@@ -56,11 +56,14 @@ class ExperimentService @Inject constructor(private val experimentResultReposito
         experimentResultRepository.insert(ExperimentResult(experimentResultData.values))
     }
 
-    fun createTasksForAllConfigurations() = configurationLock.withLock {
+    fun createTasksForAllConfigurations(count: Int) = configurationLock.withLock {
         logger.info("Add tasks for all configurations")
+
         val configurations = experimentConfigurationRepository.findAll()
-        configurations.forEach {
-            experimentTaskRepository.insert(ExperimentTask(it.id))
+        for (i in 1..count) { // Add every configuration multiple times in a interleaved order
+            configurations.forEach {
+                experimentTaskRepository.insert(ExperimentTask(it.id))
+            }
         }
 
         return@withLock configurations.size

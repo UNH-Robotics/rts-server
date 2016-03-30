@@ -83,10 +83,11 @@ class PlannerController @Inject constructor(val experimentService: ExperimentSer
         return createdTaskCount
     }
 
-    @RequestMapping(path = arrayOf("/task/schedule"), method = arrayOf(RequestMethod.POST))
-    fun scheduleAllConfiguration(): Int {
-        println("Add tasks for all configuration")
-        val createdTaskCount: Int = experimentService.createTasksForAllConfigurations()
+    @RequestMapping(path = arrayOf("/task/schedule"), method = arrayOf(RequestMethod.POST), params = arrayOf("count"))
+    fun scheduleAllConfiguration(@RequestParam("count") count: Int = 1): Int {
+        println("Add tasks for all configuration $count times.")
+
+        val createdTaskCount: Int = experimentService.createTasksForAllConfigurations(count)
         return createdTaskCount
     }
 
