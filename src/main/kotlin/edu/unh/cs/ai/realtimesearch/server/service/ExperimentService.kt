@@ -19,7 +19,6 @@ class ExperimentService @Inject constructor(private val experimentResultReposito
                                             private val experimentConfigurationRepository: ExperimentConfigurationRepository,
                                             private val experimentTaskRepository: ExperimentTaskRepository) {
 
-
     private val logger = LoggerFactory.getLogger(ExperimentService::class.java)
     private val configurationLock: Lock = ReentrantLock()
     private val resultLock: Lock = ReentrantLock()
@@ -53,6 +52,7 @@ class ExperimentService @Inject constructor(private val experimentResultReposito
     }
 
     fun submitResult(experimentResultData: ExperimentData) = resultLock.withLock {
+        // Remove rawDomain from results
         experimentResultRepository.insert(ExperimentResult(experimentResultData.values))
     }
 
