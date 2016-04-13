@@ -62,7 +62,8 @@ class ExperimentService @Inject constructor(private val experimentResultReposito
         var pageNumber = 0
         var taskCounter = 0
         do {
-            val configurations = experimentConfigurationRepository.findAll(PageRequest(pageNumber, 100))
+            val configurations = experimentConfigurationRepository.findAll(PageRequest(pageNumber, 200))
+            pageNumber++
 
             for (i in 1..count) {
                 // Add every configuration multiple times in a interleaved order
