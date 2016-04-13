@@ -59,14 +59,22 @@ class ExperimentService @Inject constructor(private val experimentResultReposito
     fun createTasksForAllConfigurations(count: Int) = configurationLock.withLock {
         logger.info("Add tasks for all configurations")
 
-        val configurations = experimentConfigurationRepository.findAll()
-        for (i in 1..count) { // Add every configuration multiple times in a interleaved order
-            configurations.forEach {
-                experimentTaskRepository.insert(ExperimentTask(it.id))
-            }
-        }
+        var pageNumber = 0
+        var taskCounter = 0
+        do {
+            val configurations = experimentConfigurationRepository.findAll(PageRequest(pageNumber, 100))
 
-        return@withLock configurations.size
+            for (i in 1..count) {
+                // Add every configuration multiple times in a interleaved order
+                configurations.forEach {
+                    experimentTaskRepository.insert(ExperimentTask(it.id))
+                    taskCounter++
+                }
+            }
+
+        } while (configurations.hasNext())
+
+        return@withLock taskCounter
     }
 
     fun createTasks(configurationTag: String): Int {
